@@ -59,6 +59,14 @@
           class="btn btn-primary">
           Получить
         </button>
+        
+        {% if is_cached %}
+        <a
+          href="{% url 'index' %}?url={{ url }}&key={{ key }}&drop_cache=1"
+          class="btn btn-danger"
+          >Сброс кэша</a
+        >
+        {% endif %}
       </form>
 
       {% if files %}
