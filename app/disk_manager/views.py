@@ -3,11 +3,19 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.core.cache import cache
 from urllib.parse import ParseResult, urlparse, parse_qs, urlencode, urlunparse
+from django.views.decorators.csrf import csrf_exempt
 
 import requests
 from datetime import datetime
 import math
 import traceback
+import aiohttp
+import asyncio
+import os
+from zipfile import ZipFile
+from io import BytesIO
+from asgiref.sync import async_to_sync
+import json
 
 PER_PAGE = 10
 
@@ -42,6 +50,59 @@ def make_drop_cache(request: HttpRequest, cache_key: str) -> HttpResponseRedirec
     new_query_string: str = urlencode(query_params, doseq=True)
     new_url: str = urlunparse(parsed_url._replace(query=new_query_string))
     return HttpResponseRedirect(new_url)
+
+
+async def download_file(
+    session: aiohttp.ClientSession, url: str, filename: str
+) -> tuple[str, bytes] | tuple[None, None]:
+    """
+    Download file async
+    """
+
+    async with session.get(url) as file_response:
+        if file_response.status == 200:
+            return os.path.basename(filename), await file_response.read()
+
+    return None, None
+
+
+async def download_files(files: list):
+    async with aiohttp.ClientSession() as session:
+        tasks = [
+            download_file(session, file["url"], file["filename"]) for file in files
+        ]
+        return await asyncio.gather(*tasks)
+
+
+def download_and_make_zip(files: list) -> HttpResponse:
+    files = async_to_sync(download_files)(files)
+
+    if len(files) > 1:
+        zip_buffer = BytesIO()
+
+        with ZipFile(zip_buffer, "w") as zip_file:
+            for filename, file_content in files:
+                if filename and file_content:
+                    zip_file.writestr(filename, file_content)
+
+        zip_buffer.seek(0)
+
+        response = HttpResponse(zip_buffer, content_type="application/zip")
+        response["Content-Disposition"] = 'attachment; filename="files.zip"'
+    else:
+        response = HttpResponse(files[0][1], content_type="application/octet-stream")
+        response["Content-Disposition"] = f'attachment; filename="{files[0][0]}"'
+
+    return response
+
+
+@login_required(login_url="login")
+@csrf_exempt
+def download_request(request: HttpRequest) -> HttpResponse:
+    body = json.loads(request.body)
+    files = body.get("files", [])
+
+    return download_and_make_zip(files)
 
 
 @login_required(login_url="login")
