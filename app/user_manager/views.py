@@ -1,10 +1,17 @@
+from django.http import (
+    HttpResponse,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+)
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 
 from .forms import RegisterForm, LoginForm
 
 
-def login_view(request):
+def login_view(
+    request,
+) -> HttpResponseRedirect | HttpResponsePermanentRedirect | HttpResponse:
     if request.method == "POST":
         form = LoginForm(data=request.POST)
 
@@ -25,7 +32,9 @@ def login_view(request):
     )
 
 
-def register_view(request):
+def register_view(
+    request,
+) -> HttpResponseRedirect | HttpResponsePermanentRedirect | HttpResponse:
     if request.method == "POST":
         form = RegisterForm(request.POST)
 
@@ -49,6 +58,6 @@ def register_view(request):
     )
 
 
-def logout_view(request):
+def logout_view(request) -> HttpResponseRedirect | HttpResponsePermanentRedirect:
     logout(request)
     return redirect("login")

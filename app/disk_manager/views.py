@@ -66,7 +66,11 @@ async def download_file(
     return None, None
 
 
-async def download_files(files: list):
+async def download_files(files: list) -> list[tuple[str, bytes] | tuple[None, None]]:
+    """
+    Download a lot of files async
+    """
+
     async with aiohttp.ClientSession() as session:
         tasks = [
             download_file(session, file["url"], file["filename"]) for file in files
@@ -75,6 +79,10 @@ async def download_files(files: list):
 
 
 def download_and_make_zip(files: list) -> HttpResponse:
+    """
+    Download file or make zip archive if there are many files
+    """
+
     files = async_to_sync(download_files)(files)
 
     if len(files) > 1:
