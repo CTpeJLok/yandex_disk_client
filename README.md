@@ -1,6 +1,6 @@
 # Инструкция для запуска проекта на чистом Ubuntu
 
-![[preview.png]]
+![<img src="https://github.com/CTpeJLok/yandex_disk_client/preview.png" />](https://github.com/CTpeJLok/yandex_disk_client/blob/main/preview)
 
 **!!! Docker образы могут не загружаться в России, поэтому используйте средства обхода или сервер в другой стране.**
 
