@@ -36,6 +36,18 @@ services:
         limits:
           cpus: '0.5'
           memory: 512MB
+  
+  redis:
+    image: redis:bullseye
+    container_name: redis
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128MB
 
   app:
     build: ./app
