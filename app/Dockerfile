@@ -16,3 +16,5 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /content/static
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]

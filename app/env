@@ -1,0 +1,9 @@
+DEBUG=1
+
+ALLOWED_HOSTS=localhost
+CORS_ALLOWED_ORIGINS=http://localhost:3000
+
+DB_ENGINE=django.db.backends.postgresql_psycopg2
+DB_CONN_MAX_AGE=360
+
+SECRET_KEY=4ImLpxdPLWeCw8SIRBKZfVmBoIlY/HZ2ma3ZfrCvbQuEiQ3f5KOEsePVVaiVqduZOX6nNP1aOk2bx3OfXNixliF3WUya4bF47V6fbn5CfjpoE32eEa7w7G+jEyxl3wSUbFu8RvE/Kmp4tYEBWW8Osy7Sk2zBnK/J1+UWc0xqKDs=

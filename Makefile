@@ -19,3 +19,6 @@ m:
 	docker-compose exec app python manage.py migrate
 mm:
 	docker-compose exec app python manage.py makemigrations
+
+logs:
+	docker-compose logs -f
