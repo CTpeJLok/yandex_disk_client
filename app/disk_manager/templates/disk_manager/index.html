@@ -63,8 +63,26 @@
 
       {% if files %}
       <h2 class="mt-5">
-        Результат:
+        Результат ({{ page }} из {{ pagination.page_count }}):
       </h2>
+
+      <div class="d-flex gap-3">
+        {% if pagination.is_can_go_back %}
+        <a
+          href="{% url 'index' %}?url={{ url }}&key={{ key }}&page={{ page|add:'-1' }}"
+          class="btn btn-primary"
+          >&lt;</a
+        >
+        {% endif %}
+        
+        {% if pagination.is_can_go_next %}
+        <a
+          href="{% url 'index' %}?url={{ url }}&key={{ key }}&page={{ page|add:'1' }}"
+          class="btn btn-primary"
+          >&gt;</a
+        >
+        {% endif %}
+      </div>
 
       <table class="table">
         <thead>

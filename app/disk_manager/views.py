@@ -4,7 +4,24 @@ from django.http import HttpRequest
 
 import requests
 from datetime import datetime
+import math
 import traceback
+
+PER_PAGE = 10
+
+
+def pagination(total: int, page: int) -> dict[str, bool | int]:
+    """
+    Calculate pagination info by total files and current page
+    """
+
+    page_count = math.ceil(total / PER_PAGE)
+
+    return {
+        "is_can_go_back": page > 1,
+        "is_can_go_next": page < page_count,
+        "page_count": page_count,
+    }
 
 
 @login_required(login_url="login")
@@ -21,15 +38,18 @@ def index(request: HttpRequest):
             },
         )
 
+    page: int = max(1, int(request.GET.get("page", 1)))
+
     context = {
         "url": url,
         "key": key,
+        "page": page,
     }
 
     if url or key:
         try:
             response = requests.get(
-                f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={url if url else key}&sort=name",
+                f"https://cloud-api.yandex.net/v1/disk/public/resources?public_key={url if url else key}&sort=name&limit={PER_PAGE}&offset={(page - 1) * PER_PAGE}",
                 headers={
                     "Accept": "application/json",
                 },
@@ -47,6 +67,7 @@ def index(request: HttpRequest):
                 file["modified"] = datetime.fromisoformat(file["modified"])
 
             context["files"] = files
+            context["pagination"] = pagination(embedded["total"], page)
         except requests.exceptions.Timeout:
             context["get_error"] = "Время ожидания истекло"
         except requests.exceptions.HTTPError:
