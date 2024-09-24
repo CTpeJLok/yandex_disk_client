@@ -43,12 +43,12 @@ class RegisterForm(forms.ModelForm):
         password_confirm: str = str(cleaned_data.get("password_confirm"))
 
         if password and password_confirm and password != password_confirm:
-            raise forms.ValidationError("Passwords don't match.")
+            self.add_error("password_confirm", "Пароли не совпадают")
 
         try:
             validate_password(password)
         except ValidationError:
-            raise forms.ValidationError("Password isn't strong enough.")
+            self.add_error("password", "Пароль слишком легкий")
 
         return cleaned_data
 
