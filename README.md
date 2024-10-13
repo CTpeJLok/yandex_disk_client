@@ -21,7 +21,7 @@ sudo apt install make
 
 ```bash
 cp env.db .env.db
-cp app/.env app/.env
+cp app/env app/.env
 ```
 
 Структура файлов
